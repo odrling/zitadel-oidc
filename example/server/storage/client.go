@@ -110,7 +110,7 @@ func (c *Client) RestrictAdditionalAccessTokenScopes() func(scopes []string) []s
 // IsScopeAllowed enables Client specific custom scopes validation
 // in this example we allow the CustomScope for all clients
 func (c *Client) IsScopeAllowed(scope string) bool {
-	return scope == CustomScope
+	return scope == groupsScope
 }
 
 // IDTokenUserinfoClaimsAssertion allows specifying if claims of scope profile, email, phone and address are asserted into the id_token

@@ -18,6 +18,7 @@ type User struct {
 	PhoneVerified     bool
 	PreferredLanguage language.Tag
 	IsAdmin           bool
+	Groups            []string
 }
 
 type Service struct {
@@ -49,6 +50,7 @@ func NewUserStore(issuer string) UserStore {
 				PhoneVerified:     false,
 				PreferredLanguage: language.English,
 				IsAdmin:           true,
+				Groups:            []string{"admin"},
 			},
 			"id2": {
 				ID:                "id2",
@@ -62,6 +64,7 @@ func NewUserStore(issuer string) UserStore {
 				PhoneVerified:     false,
 				PreferredLanguage: language.German,
 				IsAdmin:           false,
+				Groups:            []string{},
 			},
 		},
 	}

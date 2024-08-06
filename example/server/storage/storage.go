@@ -536,8 +536,8 @@ func (s *Storage) GetPrivateClaimsFromScopes(ctx context.Context, userID, client
 func (s *Storage) getPrivateClaimsFromScopes(ctx context.Context, userID, clientID string, scopes []string) (claims map[string]any, err error) {
 	for _, scope := range scopes {
 		switch scope {
-		case CustomScope:
-			claims = appendClaim(claims, CustomClaim, customClaim(clientID))
+		case groupsScope:
+			claims = appendClaim(claims, GroupsClaim, groupsClaim(clientID))
 		}
 	}
 	return claims, nil
@@ -655,6 +655,8 @@ func (s *Storage) setUserinfo(ctx context.Context, userInfo *oidc.UserInfo, user
 		case oidc.ScopeEmail:
 			userInfo.Email = user.Email
 			userInfo.EmailVerified = oidc.Bool(user.EmailVerified)
+			// you can also have a custom scope and assert public or custom claims based on that
+			userInfo.AppendClaims(GroupsClaim, groupsClaim(clientID))
 		case oidc.ScopeProfile:
 			userInfo.PreferredUsername = user.Username
 			userInfo.Name = user.FirstName + " " + user.LastName
@@ -664,9 +666,9 @@ func (s *Storage) setUserinfo(ctx context.Context, userInfo *oidc.UserInfo, user
 		case oidc.ScopePhone:
 			userInfo.PhoneNumber = user.Phone
 			userInfo.PhoneNumberVerified = user.PhoneVerified
-		case CustomScope:
+		case groupsScope:
 			// you can also have a custom scope and assert public or custom claims based on that
-			userInfo.AppendClaims(CustomClaim, customClaim(clientID))
+			userInfo.AppendClaims(GroupsClaim, groupsClaim(clientID))
 		}
 	}
 	return nil
@@ -780,12 +782,9 @@ func getInfoFromRequest(req op.TokenRequest) (clientID string, authTime time.Tim
 	return "", time.Time{}, nil
 }
 
-// customClaim demonstrates how to return custom claims based on provided information
-func customClaim(clientID string) map[string]any {
-	return map[string]any{
-		"client": clientID,
-		"other":  "stuff",
-	}
+// groupsClaim demonstrates how to return custom claims based on provided information
+func groupsClaim(clientID string) []string {
+	return []string{"admin"}
 }
 
 func appendClaim(claims map[string]any, claim string, value any) map[string]any {
